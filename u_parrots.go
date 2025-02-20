@@ -3192,30 +3192,47 @@ func ShuffleChromeTLSExtensions(exts []TLSExtension) []TLSExtension {
 
 func (uconn *UConn) applyPresetByID(id ClientHelloID) (err error) {
 
-	if uconn.clientHelloSpec == nil {
-		var spec ClientHelloSpec
-		uconn.ClientHelloID = id
+	var spec ClientHelloSpec
+	uconn.ClientHelloID = id
 
-		// choose/generate the spec
-		switch id.Client {
-		case helloRandomized, helloRandomizedNoALPN, helloRandomizedALPN:
-			spec, err = uconn.generateRandomizedSpec()
-			if err != nil {
-				return err
-			}
-		case helloCustom:
-			return nil
-		default:
+	// choose/generate the spec
+	switch id.Client {
+	case helloRandomized, helloRandomizedNoALPN, helloRandomizedALPN:
+		spec, err = uconn.generateRandomizedSpec()
+		if err != nil {
+			return err
+		}
+	case helloCustom:
+		return nil
+	default:
+		spec, err = id.ToSpec()
+		if err != nil {
 			spec, err = UTLSIdToSpec(id)
 			if err != nil {
 				return err
 			}
 		}
 
-		uconn.clientHelloSpec = &spec
+		if uconn.WithForceHttp1 {
+			for _, ext := range spec.Extensions {
+				switch ext.(type) {
+				case *ALPNExtension:
+					alpnExt, ok := ext.(*ALPNExtension)
+					if !ok {
+						return fmt.Errorf("extension is not of type *ALPNExtension")
+					}
+
+					alpnExt.AlpnProtocols = []string{"http/1.1"}
+				}
+			}
+		}
+
+		if uconn.WithRandomTLSExtensionOrder {
+			spec.Extensions = ShuffleChromeTLSExtensions(spec.Extensions)
+		}
 	}
 
-	return uconn.ApplyPreset(uconn.clientHelloSpec)
+	return uconn.ApplyPreset(&spec)
 }
 
 // ApplyPreset should only be used in conjunction with HelloCustom to apply custom specs.
