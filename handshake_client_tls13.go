@@ -406,7 +406,7 @@ func (hs *clientHandshakeStateTLS13) processHelloRetryRequest() error {
 	// crypto/tls code above this point had changed crypto/tls structures in accordance with HRR, and is about
 	// to call default marshaller.
 	// Instead, we fill uTLS-specific structs and call uTLS marshaller.
-	// Only extensionCookie, extensionPreSharedKey, extensionKeyShare, extensionEarlyData, extensionSupportedVersions,
+	// Only ExtensionCookie, ExtensionPreSharedKey, ExtensionKeyShare, ExtensionEarlyData, ExtensionSupportedVersions,
 	// and utlsExtensionPadding are supposed to change
 	if hs.uconn != nil {
 		if hs.uconn.ClientHelloID.Str() != HelloGolang.Str() {
