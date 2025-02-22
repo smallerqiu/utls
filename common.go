@@ -401,29 +401,29 @@ type SignatureScheme uint16
 
 const (
 	// RSASSA-PKCS1-v1_5 algorithms.
-	PKCS1WithSHA256 SignatureScheme = 0x0401
-	PKCS1WithSHA384 SignatureScheme = 0x0501
-	PKCS1WithSHA512 SignatureScheme = 0x0601
+	PKCS1WithSHA256 SignatureScheme = 0x0401 //1025
+	PKCS1WithSHA384 SignatureScheme = 0x0501 //1281
+	PKCS1WithSHA512 SignatureScheme = 0x0601 //1537
 
 	// RSASSA-PSS algorithms with public key OID rsaEncryption.
-	PSSWithSHA256 SignatureScheme = 0x0804
-	PSSWithSHA384 SignatureScheme = 0x0805
-	PSSWithSHA512 SignatureScheme = 0x0806
+	PSSWithSHA256 SignatureScheme = 0x0804 //2052
+	PSSWithSHA384 SignatureScheme = 0x0805 //2053
+	PSSWithSHA512 SignatureScheme = 0x0806 //2054
 
 	// ECDSA algorithms. Only constrained to a specific curve in TLS 1.3.
-	ECDSAWithP256AndSHA256 SignatureScheme = 0x0403
-	ECDSAWithP384AndSHA384 SignatureScheme = 0x0503
-	ECDSAWithP521AndSHA512 SignatureScheme = 0x0603
+	ECDSAWithP256AndSHA256 SignatureScheme = 0x0403 //1027
+	ECDSAWithP384AndSHA384 SignatureScheme = 0x0503 //1283
+	ECDSAWithP521AndSHA512 SignatureScheme = 0x0603 //1539
 
 	// EdDSA algorithms.
-	Ed25519 SignatureScheme = 0x0807
+	Ed25519 SignatureScheme = 0x0807 //2055
 
 	// Legacy signature and hash algorithms for TLS 1.2.
-	PKCS1WithSHA1 SignatureScheme = 0x0201
-	ECDSAWithSHA1 SignatureScheme = 0x0203
+	PKCS1WithSHA1 SignatureScheme = 0x0201 //513
+	ECDSAWithSHA1 SignatureScheme = 0x0203 //515
 
-	SHA224_RSA   SignatureScheme = 0x0301
-	SHA224_ECDSA SignatureScheme = 0x0303
+	SHA224_RSA   SignatureScheme = 0x0301 //769
+	SHA224_ECDSA SignatureScheme = 0x0303 //771
 )
 
 // ClientHelloInfo contains information from a ClientHello message in order to
