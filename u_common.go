@@ -613,7 +613,13 @@ var (
 	HelloFirefox_106  = ClientHelloID{helloFirefox, false, "106", nil, nil, EmptyClientHelloSpecFactory}
 	HelloFirefox_108  = ClientHelloID{helloFirefox, false, "108", nil, nil, EmptyClientHelloSpecFactory}
 	HelloFirefox_110  = ClientHelloID{helloFirefox, false, "110", nil, nil, EmptyClientHelloSpecFactory}
+	HelloFirefox_117  = ClientHelloID{helloFirefox, false, "117", nil, nil, EmptyClientHelloSpecFactory}
 	HelloFirefox_120  = ClientHelloID{helloFirefox, false, "120", nil, nil, EmptyClientHelloSpecFactory}
+	HelloFirefox_123  = ClientHelloID{helloFirefox, false, "123", nil, nil, EmptyClientHelloSpecFactory}
+	HelloFirefox_124  = ClientHelloID{helloFirefox, false, "124", nil, nil, EmptyClientHelloSpecFactory}
+	HelloFirefox_132  = ClientHelloID{helloFirefox, false, "132", nil, nil, EmptyClientHelloSpecFactory}
+	HelloFirefox_133  = ClientHelloID{helloFirefox, false, "133", nil, nil, EmptyClientHelloSpecFactory}
+	HelloFirefox_135  = ClientHelloID{helloFirefox, false, "135", nil, nil, EmptyClientHelloSpecFactory}
 
 	HelloChrome_Auto        = HelloChrome_120
 	HelloChrome_58          = ClientHelloID{helloChrome, false, "58", nil, nil, EmptyClientHelloSpecFactory}
@@ -631,27 +637,35 @@ var (
 	HelloChrome_106         = ClientHelloID{helloChrome, false, "106", nil, nil, EmptyClientHelloSpecFactory}
 	HelloChrome_107         = ClientHelloID{helloChrome, false, "107", nil, nil, EmptyClientHelloSpecFactory}
 	HelloChrome_108         = ClientHelloID{helloChrome, false, "108", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_106_Shuffle = ClientHelloID{helloChrome, true, "106", nil, nil, EmptyClientHelloSpecFactory} // TLS Extension shuffler enabled starting from 106
+	HelloChrome_106_Shuffle = ClientHelloID{helloChrome, true, "106_PSK", nil, nil, EmptyClientHelloSpecFactory} // TLS Extension shuffler enabled starting from 106
 	HelloChrome_109         = ClientHelloID{helloChrome, false, "109", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_110         = ClientHelloID{helloChrome, false, "110", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_111         = ClientHelloID{helloChrome, false, "111", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_112         = ClientHelloID{helloChrome, false, "112", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_110         = ClientHelloID{helloChrome, true, "110", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_111         = ClientHelloID{helloChrome, true, "111", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_112         = ClientHelloID{helloChrome, true, "112", nil, nil, EmptyClientHelloSpecFactory}
 	// Chrome w/ PSK: Chrome start sending this ClientHello after doing TLS 1.3 handshake with the same server.
 	// Beta: PSK extension added. However, uTLS doesn't ship with full PSK support.
 	// Use at your own discretion.
-	HelloChrome_100_PSK              = ClientHelloID{helloChrome, false, "100_PSK", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_112_PSK_Shuf         = ClientHelloID{helloChrome, false, "112_PSK", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_114_Padding_PSK_Shuf = ClientHelloID{helloChrome, false, "114_PSK", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_100_PSK              = ClientHelloID{helloChrome, true, "100_PSK", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_112_PSK_Shuf         = ClientHelloID{helloChrome, true, "112_PSK", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_114_Padding_PSK_Shuf = ClientHelloID{helloChrome, true, "114_PSK", nil, nil, EmptyClientHelloSpecFactory}
 
 	// Chrome w/ Post-Quantum Key Agreement
 	// Beta: PQ extension added. However, uTLS doesn't ship with full PQ support. Use at your own discretion.
-	HelloChrome_115_PQ     = ClientHelloID{helloChrome, false, "115_PQ", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_115_PQ_PSK = ClientHelloID{helloChrome, false, "115_PQ_PSK", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_115_PQ     = ClientHelloID{helloChrome, true, "115_PQ", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_115_PQ_PSK = ClientHelloID{helloChrome, true, "115_PQ_PSK", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_116_PQ     = ClientHelloID{helloChrome, true, "116_PQ", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_116_PQ_PSK = ClientHelloID{helloChrome, true, "116_PQ_PSK", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_117        = ClientHelloID{helloChrome, true, "117", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_124        = ClientHelloID{helloChrome, true, "124", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_131        = ClientHelloID{helloChrome, true, "131", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_131_PSK    = ClientHelloID{helloChrome, true, "131_PSK", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_133        = ClientHelloID{helloChrome, true, "133", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_133_PSK    = ClientHelloID{helloChrome, true, "133_PSK", nil, nil, EmptyClientHelloSpecFactory}
 
 	// Chrome ECH
-	HelloChrome_120 = ClientHelloID{helloChrome, false, "120", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_120 = ClientHelloID{helloChrome, true, "120", nil, nil, EmptyClientHelloSpecFactory}
 	// Chrome w/ Post-Quantum Key Agreement and Encrypted ClientHello
-	HelloChrome_120_PQ = ClientHelloID{helloChrome, false, "120_PQ", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_120_PQ = ClientHelloID{helloChrome, true, "120_PQ", nil, nil, EmptyClientHelloSpecFactory}
 
 	HelloOpera_Auto = HelloOpera_91
 	HelloOpera_91   = ClientHelloID{helloOpera, false, "91", nil, nil, EmptyClientHelloSpecFactory}
@@ -683,6 +697,7 @@ var (
 	Hello360_Auto = Hello360_7_5 // Hello360_11_0 seems to be incompatible with this library
 	Hello360_7_5  = ClientHelloID{hello360, false, "7.5", nil, nil, EmptyClientHelloSpecFactory}
 	Hello360_11_0 = ClientHelloID{hello360, false, "11.0", nil, nil, EmptyClientHelloSpecFactory}
+	Hello360_14_5 = ClientHelloID{hello360, false, "14.5", nil, nil, EmptyClientHelloSpecFactory}
 
 	HelloQQ_Auto = HelloQQ_11_1
 	HelloQQ_11_1 = ClientHelloID{helloQQ, false, "11.1", nil, nil, EmptyClientHelloSpecFactory}
