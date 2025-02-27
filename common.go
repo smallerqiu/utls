@@ -112,7 +112,9 @@ const (
 	ExtensionStatusRequestV2         uint16 = 17
 	ExtensionSCT                     uint16 = 18
 	ExtensionPadding                 uint16 = 21
+	ExtensionEncryptThenMac          uint16 = 22
 	ExtensionExtendedMasterSecret    uint16 = 23
+	ExtensionFakeTokenBinding        uint16 = 24
 	ExtensionCompressCertificate     uint16 = 27 // https://datatracker.ietf.org/doc/html/rfc8879#section-7.1
 	ExtensionRecordSizeLimit         uint16 = 28
 	ExtensionDelegatedCredentials    uint16 = 34
@@ -123,6 +125,7 @@ const (
 	ExtensionCookie                  uint16 = 44
 	ExtensionPSKModes                uint16 = 45
 	ExtensionCertificateAuthorities  uint16 = 47
+	ExtensionPostHandShakeAuth       uint16 = 49
 	ExtensionSignatureAlgorithmsCert uint16 = 50
 	ExtensionKeyShare                uint16 = 51
 	ExtensionQUICTransportParameters uint16 = 57
@@ -131,6 +134,7 @@ const (
 	ExtensionALPS                    uint16 = 17613
 	ExtensionECH                     uint16 = 65037
 	ExtensionRenegotiationInfo       uint16 = 65281
+	ExtensionChannelId               uint16 = 30032
 )
 
 // TLS signaling cipher suite values
