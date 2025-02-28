@@ -8,6 +8,7 @@ import (
 var DefaultClientProfile = Safari_16_0
 
 var MappedTLSClients = map[string]ClientProfile{
+	"custom":            Custom,
 	"qq_13_5":           QQ_13_5,
 	"uc_17_3":           UC_17_3,
 	"360_14_5":          QH360_14_5,
