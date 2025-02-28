@@ -154,8 +154,12 @@ const (
 	CurveP384     CurveID = 24
 	CurveP521     CurveID = 25
 	X25519        CurveID = 29
+	X448          CurveID = 30
 	FAKEFFDHE2048 CurveID = 256 //CurveID(FakeFFDHE2048)
 	FAKEFFDHE3072 CurveID = 257 //CurveID(FakeFFDHE3072)
+	FAKEFFDHE4096 CurveID = 258 //CurveID(FakeFFDHE4096)
+	FAKEFFDHE6144 CurveID = 259 //CurveID(FakeFFDHE6144)
+	FAKEFFDHE8192 CurveID = 160 //CurveID(FakeFFDHE8192)
 )
 
 // TLS 1.3 Key Share. See RFC 8446, Section 4.2.8.
@@ -406,6 +410,7 @@ type SignatureScheme uint16
 const (
 	// RSASSA-PKCS1-v1_5 algorithms.
 	PKCS1WithSHA256 SignatureScheme = 0x0401 //1025
+	DSAWithSHA256   SignatureScheme = 0x0402 //1026
 	PKCS1WithSHA384 SignatureScheme = 0x0501 //1281
 	PKCS1WithSHA512 SignatureScheme = 0x0601 //1537
 
@@ -414,20 +419,28 @@ const (
 	PSSWithSHA384 SignatureScheme = 0x0805 //2053
 	PSSWithSHA512 SignatureScheme = 0x0806 //2054
 
+	// rsa_pss_pss
+	PSSPASSSHA256 SignatureScheme = 0x0809 //2057
+	PSSPASSSHA384 SignatureScheme = 0x080A //2058
+	PSSPASSSHA512 SignatureScheme = 0x080B //2059
+
 	// ECDSA algorithms. Only constrained to a specific curve in TLS 1.3.
 	ECDSAWithP256AndSHA256 SignatureScheme = 0x0403 //1027
 	ECDSAWithP384AndSHA384 SignatureScheme = 0x0503 //1283
 	ECDSAWithP521AndSHA512 SignatureScheme = 0x0603 //1539
 
 	// EdDSA algorithms.
-	Ed25519 SignatureScheme = 0x0807 //2055
+	Ed25519     SignatureScheme = 0x0807 //2055
+	FAKEEd25519 SignatureScheme = 0x0808 //2056
 
 	// Legacy signature and hash algorithms for TLS 1.2.
 	PKCS1WithSHA1 SignatureScheme = 0x0201 //513
+	DASWithSHA1   SignatureScheme = 0x0202 //514
 	ECDSAWithSHA1 SignatureScheme = 0x0203 //515
 
-	SHA224_RSA   SignatureScheme = 0x0301 //769
-	SHA224_ECDSA SignatureScheme = 0x0303 //771
+	SHA224_RSA    SignatureScheme = 0x0301 //769
+	SHA224_ECDSA  SignatureScheme = 0x0303 //771
+	DSAWithSHA224 SignatureScheme = 0x0302 //770
 )
 
 // ClientHelloInfo contains information from a ClientHello message in order to

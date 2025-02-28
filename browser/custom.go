@@ -19,7 +19,7 @@ var Custom = ClientProfile{
 				CipherSuites: []uint16{
 					tls.TLS_AES_256_GCM_SHA384,                        //4866
 					tls.TLS_AES_128_GCM_SHA256,                        //4865
-					tls.TLS_CHACHA20_POLY1305_SHA256,                  // 5867
+					tls.TLS_CHACHA20_POLY1305_SHA256,                  //5867
 					tls.TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,       //49196
 					tls.TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,       //49195
 					tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256, //52393
@@ -40,17 +40,16 @@ var Custom = ClientProfile{
 					&tls.SNIExtension{},           //0 , server_name
 					&tls.StatusRequestExtension{}, //5 ,status_request
 					&tls.SupportedCurvesExtension{Curves: []tls.CurveID{ //10 ,supported_groups
-						tls.GREASE_PLACEHOLDER,
-						tls.X25519,
-						tls.CurveP256, //23
-						tls.CurveP384, //24
-						tls.CurveP521, //25
-						30,
-						256,
-						257,
-						258,
-						259,
-						260,
+						tls.X25519,        //29
+						tls.CurveP256,     //23
+						tls.CurveP384,     //24
+						tls.CurveP521,     //25
+						tls.X448,          //30
+						tls.FAKEFFDHE2048, //256
+						tls.FAKEFFDHE3072, //257
+						tls.FAKEFFDHE4096, //258
+						tls.FAKEFFDHE6144, //259
+						tls.FAKEFFDHE8192, //260
 					}},
 					&tls.SupportedPointsExtension{SupportedPoints: []byte{ //11 ,ec_point_formats
 						tls.PointFormatUncompressed,
@@ -58,29 +57,29 @@ var Custom = ClientProfile{
 					&tls.ALPNExtension{AlpnProtocols: []string{"h2", "http/1.1"}}, //16 ,application_layer_protocol_negotiation
 					&tls.StatusRequestV2Extension{},                               //17
 					&tls.ExtendedMasterSecretExtension{},                          //23 ,extended_master_secret
-					&tls.SessionTicketExtension{},                                 // 35  ,session_ticket
+					&tls.SessionTicketExtension{},                                 //35  ,session_ticket
 					&tls.SignatureAlgorithmsExtension{SupportedSignatureAlgorithms: []tls.SignatureScheme{ //13 ,signature_algorithms
 						tls.ECDSAWithP256AndSHA256, //1027
 						tls.ECDSAWithP384AndSHA384, //1283
 						tls.ECDSAWithP521AndSHA512, //1539
-						tls.Ed25519,                // 2055
-						2056,
-						tls.PSSWithSHA256, //2052
-						tls.PSSWithSHA384, //2053
-						tls.PSSWithSHA512, //2054
-						2057,
-						2058,
-						2059,
-						1025,
-						1281,
-						1537,
-						1026,
-						771,
-						769,
-						770,
-						515,
-						513,
-						514,
+						tls.Ed25519,                //2055
+						tls.FAKEEd25519,            //2056
+						tls.PSSWithSHA256,          //2052
+						tls.PSSWithSHA384,          //2053
+						tls.PSSWithSHA512,          //2054
+						tls.PSSPASSSHA256,          //2057,
+						tls.PSSPASSSHA384,          //2058,
+						tls.PSSPASSSHA512,          //2059,
+						tls.PKCS1WithSHA256,        //1025,
+						tls.PKCS1WithSHA384,        //1281,
+						tls.PKCS1WithSHA512,        //1537,
+						tls.DSAWithSHA256,          //1026,
+						tls.SHA224_ECDSA,           //771,
+						tls.SHA224_RSA,             //769,
+						tls.DSAWithSHA224,          //770,
+						tls.ECDSAWithSHA1,          //515,
+						tls.PKCS1WithSHA1,          //513,
+						tls.DASWithSHA1,            //514,
 					}},
 					&tls.SupportedVersionsExtension{Versions: []uint16{ //43 ,supported_versions
 						tls.VersionTLS13,
@@ -89,36 +88,34 @@ var Custom = ClientProfile{
 					&tls.PSKKeyExchangeModesExtension{Modes: []uint8{ //45  ,psk_key_exchange_modes
 						tls.PskModeDHE,
 					}},
-
-					&tls.UtlsGREASEExtension{},           //2570 , GREASE
-					&tls.ExtendedMasterSecretExtension{}, //23 ,extended_master_secret
-					&tls.RenegotiationInfoExtension{ //65281 , renegotiation_info
-						Renegotiation: tls.RenegotiateOnceAsClient,
-					},
-
-					&tls.SessionTicketExtension{}, // 35  ,session_ticket
-
-					&tls.SCTExtension{}, //18 ,signed_certificate_timestamp
-					&tls.KeyShareExtension{KeyShares: []tls.KeyShare{ //51 ,key_share
-						{Group: tls.GREASE_PLACEHOLDER, Data: []byte{0}},
-						{Group: tls.X25519},
-					}},
-
-					&tls.SupportedVersionsExtension{Versions: []uint16{ //43 ,supported_versions
-						tls.GREASE_PLACEHOLDER,
-						tls.VersionTLS13,
-						tls.VersionTLS12,
-						tls.VersionTLS11,
-						tls.VersionTLS10,
-					}},
-					&tls.SignatureAlgorithmsCertExtension{
+					&tls.SignatureAlgorithmsCertExtension{ //50
 						SupportedSignatureAlgorithms: []tls.SignatureScheme{
-							1027, 1283, 1539, 2055, 2056, 2052, 2053, 2054, 2057, 2058, 2059, 1025, 1281, 1537, 1026, 771, 769, 770, 515, 513, 514,
+							tls.ECDSAWithP256AndSHA256, //1027
+							tls.ECDSAWithP384AndSHA384, //1283
+							tls.ECDSAWithP521AndSHA512, //1539
+							tls.Ed25519,                //2055
+							tls.FAKEEd25519,            //2056
+							tls.PSSWithSHA256,          //2052
+							tls.PSSWithSHA384,          //2053
+							tls.PSSWithSHA512,          //2054
+							tls.PSSPASSSHA256,          //2057,
+							tls.PSSPASSSHA384,          //2058,
+							tls.PSSPASSSHA512,          //2059,
+							tls.PKCS1WithSHA256,        //1025,
+							tls.PKCS1WithSHA384,        //1281,
+							tls.PKCS1WithSHA512,        //1537,
+							tls.DSAWithSHA256,          //1026,
+							tls.SHA224_ECDSA,           //771,
+							tls.SHA224_RSA,             //769,
+							tls.DSAWithSHA224,          //770,
+							tls.ECDSAWithSHA1,          //515,
+							tls.PKCS1WithSHA1,          //513,
+							tls.DASWithSHA1,            //514,
 						},
-					}, //50
+					},
 					&tls.KeyShareExtension{KeyShares: []tls.KeyShare{ //51 ,key_share
 						{Group: tls.X25519},
-						{Group: 23},
+						{Group: tls.CurveP256},
 					}},
 					&tls.RenegotiationInfoExtension{ //65281 , renegotiation_info
 						Renegotiation: tls.RenegotiateOnceAsClient,
