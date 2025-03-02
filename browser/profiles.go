@@ -108,10 +108,6 @@ func NewClientProfile(clientHelloId tls.ClientHelloID, settings map[http2.Settin
 		headerPriority:    headerPriority,
 	}
 }
-func (c ClientProfile) SetRandomExtensionOrder(randomExtensionOrder bool) {
-	c.clientHelloId.RandomExtensionOrder = randomExtensionOrder
-}
-
 func (c ClientProfile) GetClientHelloSpec() (tls.ClientHelloSpec, error) {
 	return c.clientHelloId.ToSpec()
 }
