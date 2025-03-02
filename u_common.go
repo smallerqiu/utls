@@ -761,6 +761,25 @@ func unGREASEUint16(v uint16) uint16 {
 	}
 }
 
+var utlsSupportedGroups = []CurveID{
+	X25519,
+	CurveP256,
+	CurveP384,
+	CurveP521,
+	// FAKEFFDHE2048,
+	// FAKEFFDHE3072,
+}
+
+func isGroupSupported(id CurveID) bool {
+	for _, group := range utlsSupportedGroups {
+		if group == id {
+			return true
+		}
+	}
+
+	return false
+}
+
 // utlsMacSHA384 returns a SHA-384 based MAC. These are only supported in TLS 1.2
 // so the given version is ignored.
 func utlsMacSHA384(key []byte) hash.Hash {

@@ -314,7 +314,7 @@ func (hs *clientHandshakeStateTLS13) processHelloRetryRequest() error {
 				break
 			}
 		}
-		if !curveOK {
+		if !curveOK || !isGroupSupported(curveID) {
 			c.sendAlert(alertIllegalParameter)
 			return errors.New("tls: server selected unsupported group")
 		}

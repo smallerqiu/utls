@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"os"
 	"strings"
 	"sync"
 	"time"
@@ -159,7 +160,7 @@ const (
 	FAKEFFDHE3072 CurveID = 257 //CurveID(FakeFFDHE3072)
 	FAKEFFDHE4096 CurveID = 258 //CurveID(FakeFFDHE4096)
 	FAKEFFDHE6144 CurveID = 259 //CurveID(FakeFFDHE6144)
-	FAKEFFDHE8192 CurveID = 160 //CurveID(FakeFFDHE8192)
+	FAKEFFDHE8192 CurveID = 260 //CurveID(FakeFFDHE8192)
 )
 
 // TLS 1.3 Key Share. See RFC 8446, Section 4.2.8.
@@ -1154,15 +1155,13 @@ func (c *Config) supportedVersions(isClient bool) []uint16 {
 		if needFIPS() && (v < fipsMinVersion(c) || v > fipsMaxVersion(c)) {
 			continue
 		}
-		if (c == nil || c.MinVersion == 0) && v < VersionTLS12 {
+		if (c == nil || c.MinVersion == 0) && isClient && v < VersionTLS12 {
 			// [uTLS SECTION BEGIN]
 			// Disable unsupported godebug package
 			// if isClient || tls10server.Value() != "1" {
 			// 	continue
 			// }
-			if isClient {
-				continue
-			}
+			continue
 			// [uTLS SECTION END]
 		}
 		if c != nil && c.MinVersion != 0 && v < c.MinVersion {
@@ -1508,17 +1507,43 @@ const (
 )
 
 func (c *Config) writeKeyLog(label string, clientRandom, secret []byte) error {
-	if c.KeyLogWriter == nil {
+	sslKeyLogFilePath := os.Getenv("SSLKEYLOGFILE")
+	if c.KeyLogWriter == nil && sslKeyLogFilePath == "" { // aborting early to save CPU
 		return nil
 	}
 
+	// if we're here, that means that we want to write a log line either to the
+	// c.KeyLogWriter or to the file pointed at by $SSLKEYLOGFILE
 	logLine := fmt.Appendf(nil, "%s %x %x\n", label, clientRandom, secret)
 
 	writerMutex.Lock()
-	_, err := c.KeyLogWriter.Write(logLine)
+	// A: write to the provided c.KeyLogWriter
+	if c.KeyLogWriter != nil {
+		_, err := c.KeyLogWriter.Write(logLine)
+		if err != nil {
+			return err
+		}
+	}
+	// B: write to the env SSLKEYLOGFILE
+	if sslKeyLogFilePath != "" {
+		sslKeyLogFile, err := os.OpenFile(sslKeyLogFilePath, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
+		if err != nil {
+			return fmt.Errorf("[KEYLOG] Error opening SSLKEYLOG file: %w", err)
+		}
+		_, err = sslKeyLogFile.Write(logLine)
+		if err != nil {
+			return fmt.Errorf("[KEYLOG] Error writing SSLKEYLOG file: %w", err)
+		}
+		// closing the file to make sure that everything get's flushed to disk
+		// yes, this will
+		err = sslKeyLogFile.Close()
+		if err != nil {
+			return fmt.Errorf("[KEYLOG] Error closing SSLKEYLOG file: %w", err)
+		}
+	}
 	writerMutex.Unlock()
 
-	return err
+	return nil
 }
 
 // writerMutex protects all KeyLogWriters globally. It is rarely enabled,
