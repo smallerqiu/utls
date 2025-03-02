@@ -166,7 +166,7 @@ const (
 	helloRandomized       = "Randomized"
 	helloRandomizedALPN   = "Randomized-ALPN"
 	helloRandomizedNoALPN = "Randomized-NoALPN"
-	helloCustom           = "Custom"
+	helloCustom           = "CustomBrowser"
 	helloFirefox          = "Firefox"
 	helloOpera            = "Opera"
 	helloChrome           = "Chrome"
