@@ -909,7 +909,7 @@ const (
 	ssl_grease_last_index = ssl_grease_ticket_extension
 )
 
-// it is responsibility of user not to generate multiple grease extensions with same value
+// it is responsibility of user not to generate multiple grease extensions with same value (2570)
 type UtlsGREASEExtension struct {
 	Value uint16
 	Body  []byte // in Chrome first grease has empty body, second grease has a single zero byte

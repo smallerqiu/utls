@@ -1,4 +1,5 @@
-module github.com/smallerqiu/utls 
+module github.com/smallerqiu/utls
+
 //1.3.1
 
 go 1.22.0
