@@ -32,14 +32,17 @@ const (
 
 // TLS
 const (
+	extensionNextProtoNeg uint16 = 13172 // not IANA assigned. Removed by crypto/tls since Nov 2019
+
 	utlsExtensionPadding             uint16 = 21
-	utlsExtensionCompressCertificate uint16 = 27     // https://datatracker.ietf.org/doc/html/rfc8879#section-7.1
-	utlsExtensionApplicationSettings uint16 = 17513  // not IANA assigned
-	utlsFakeExtensionCustom          uint16 = 1234   // not IANA assigned, for ALPS
-	utlsExtensionECH                 uint16 = 0xfe0d // draft-ietf-tls-esni-17
-	utlsExtensionECHOuterExtensions  uint16 = 0xfd00 // draft-ietf-tls-esni-17
+	utlsExtensionCompressCertificate uint16 = 27    // https://datatracker.ietf.org/doc/html/rfc8879#section-7.1
+	utlsExtensionApplicationSettings uint16 = 17513 // not IANA assigned
+	utlsFakeExtensionCustom          uint16 = 1234  // not IANA assigned, for ALPS
+	utlsExtensionECH                 uint16 = 65037 // draft-ietf-tls-esni-17
+	utlsExtensionECHOuterExtensions  uint16 = 64768 // draft-ietf-tls-esni-17
 
 	// extensions with 'fake' prefix break connection, if server echoes them back
+	FakeExtensionEncryptThenMAC       uint16 = 22
 	fakeExtensionEncryptThenMAC       uint16 = 22
 	fakeExtensionTokenBinding         uint16 = 24
 	fakeExtensionDelegatedCredentials uint16 = 34
@@ -446,9 +449,16 @@ func (chs *ClientHelloSpec) ImportTLSClientHello(data map[string][]byte) error {
 				if err != nil {
 					return err
 				}
-			case utlsExtensionApplicationSettings:
+			case ExtensionALPSOld:
 				// TODO: tlsfingerprint.io should record/provide application settings data
-				extWriter.(*ApplicationSettingsExtension).SupportedProtocols = []string{"h2"}
+				ext := extWriter.(*ApplicationSettingsExtension)
+				ext.CodePoint = ExtensionALPSOld
+				ext.SupportedProtocols = []string{"h2"}
+			case ExtensionALPS:
+				// TODO: tlsfingerprint.io should record/provide application settings data
+				ext := extWriter.(*ApplicationSettingsExtension)
+				ext.CodePoint = ExtensionALPS
+				ext.SupportedProtocols = []string{"h2"}
 			case ExtensionPreSharedKey:
 				log.Printf("[Warning] PSK extension added without data")
 			default:
@@ -609,68 +619,55 @@ var (
 	HelloFirefox_99   = ClientHelloID{helloFirefox, false, "99", nil, nil, EmptyClientHelloSpecFactory}
 	HelloFirefox_102  = ClientHelloID{helloFirefox, false, "102", nil, nil, EmptyClientHelloSpecFactory}
 	HelloFirefox_104  = ClientHelloID{helloFirefox, false, "104", nil, nil, EmptyClientHelloSpecFactory}
-	HelloFirefox_105  = ClientHelloID{helloFirefox, false, "105", nil, nil, EmptyClientHelloSpecFactory}
 	HelloFirefox_106  = ClientHelloID{helloFirefox, false, "106", nil, nil, EmptyClientHelloSpecFactory}
 	HelloFirefox_108  = ClientHelloID{helloFirefox, false, "108", nil, nil, EmptyClientHelloSpecFactory}
 	HelloFirefox_110  = ClientHelloID{helloFirefox, false, "110", nil, nil, EmptyClientHelloSpecFactory}
-	HelloFirefox_117  = ClientHelloID{helloFirefox, false, "117", nil, nil, EmptyClientHelloSpecFactory}
+	HelloFirefox_105  = ClientHelloID{helloFirefox, false, "105", nil, nil, EmptyClientHelloSpecFactory}
 	HelloFirefox_120  = ClientHelloID{helloFirefox, false, "120", nil, nil, EmptyClientHelloSpecFactory}
-	HelloFirefox_123  = ClientHelloID{helloFirefox, false, "123", nil, nil, EmptyClientHelloSpecFactory}
-	HelloFirefox_124  = ClientHelloID{helloFirefox, false, "124", nil, nil, EmptyClientHelloSpecFactory}
-	HelloFirefox_132  = ClientHelloID{helloFirefox, false, "132", nil, nil, EmptyClientHelloSpecFactory}
-	HelloFirefox_133  = ClientHelloID{helloFirefox, false, "133", nil, nil, EmptyClientHelloSpecFactory}
-	HelloFirefox_135  = ClientHelloID{helloFirefox, false, "135", nil, nil, EmptyClientHelloSpecFactory}
 
-	HelloChrome_Auto        = HelloChrome_120
-	HelloChrome_58          = ClientHelloID{helloChrome, false, "58", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_62          = ClientHelloID{helloChrome, false, "62", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_70          = ClientHelloID{helloChrome, false, "70", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_72          = ClientHelloID{helloChrome, false, "72", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_83          = ClientHelloID{helloChrome, false, "83", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_87          = ClientHelloID{helloChrome, false, "87", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_96          = ClientHelloID{helloChrome, false, "96", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_100         = ClientHelloID{helloChrome, false, "100", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_102         = ClientHelloID{helloChrome, false, "102", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_103         = ClientHelloID{helloChrome, false, "103", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_104         = ClientHelloID{helloChrome, false, "104", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_105         = ClientHelloID{helloChrome, false, "105", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_106         = ClientHelloID{helloChrome, false, "106", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_107         = ClientHelloID{helloChrome, false, "107", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_108         = ClientHelloID{helloChrome, false, "108", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_106_Shuffle = ClientHelloID{helloChrome, true, "106_PSK", nil, nil, EmptyClientHelloSpecFactory} // TLS Extension shuffler enabled starting from 106
-	HelloChrome_109         = ClientHelloID{helloChrome, false, "109", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_110         = ClientHelloID{helloChrome, true, "110", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_111         = ClientHelloID{helloChrome, true, "111", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_112         = ClientHelloID{helloChrome, true, "112", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_106_Shuffle = ClientHelloID{helloChrome, true, "106", nil, nil, EmptyClientHelloSpecFactory} // TLS Extension shuffler enabled starting from 106
+
 	// Chrome w/ PSK: Chrome start sending this ClientHello after doing TLS 1.3 handshake with the same server.
 	// Beta: PSK extension added. However, uTLS doesn't ship with full PSK support.
 	// Use at your own discretion.
-	HelloChrome_100_PSK              = ClientHelloID{helloChrome, true, "100_PSK", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_112_PSK_Shuf         = ClientHelloID{helloChrome, true, "112_PSK", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_114_Padding_PSK_Shuf = ClientHelloID{helloChrome, true, "114_PSK", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_100_PSK         = ClientHelloID{helloChrome, false, "100_PSK", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_112_PSK         = ClientHelloID{helloChrome, false, "112_PSK", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_114_Padding_PSK = ClientHelloID{helloChrome, false, "114_PSK", nil, nil, EmptyClientHelloSpecFactory}
 
 	// Chrome w/ Post-Quantum Key Agreement
 	// Beta: PQ extension added. However, uTLS doesn't ship with full PQ support. Use at your own discretion.
-	HelloChrome_115_PQ     = ClientHelloID{helloChrome, true, "115_PQ", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_115_PQ_PSK = ClientHelloID{helloChrome, true, "115_PQ_PSK", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_116_PQ     = ClientHelloID{helloChrome, true, "116_PQ", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_116_PQ_PSK = ClientHelloID{helloChrome, true, "116_PQ_PSK", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_117        = ClientHelloID{helloChrome, true, "117", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_124        = ClientHelloID{helloChrome, true, "124", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_131        = ClientHelloID{helloChrome, true, "131", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_131_PSK    = ClientHelloID{helloChrome, true, "131_PSK", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_133        = ClientHelloID{helloChrome, true, "133", nil, nil, EmptyClientHelloSpecFactory}
-	HelloChrome_133_PSK    = ClientHelloID{helloChrome, true, "133_PSK", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_115_PQ     = ClientHelloID{helloChrome, false, "115_PQ", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_115_PQ_PSK = ClientHelloID{helloChrome, false, "115_PQ_PSK", nil, nil, EmptyClientHelloSpecFactory}
+	HelloOpera_Auto        = HelloOpera_91
+	HelloOpera_91          = ClientHelloID{helloOpera, false, "91", nil, nil, EmptyClientHelloSpecFactory}
+	HelloOpera_90          = ClientHelloID{helloOpera, false, "90", nil, nil, EmptyClientHelloSpecFactory}
+	HelloOpera_89          = ClientHelloID{helloOpera, false, "89", nil, nil, EmptyClientHelloSpecFactory}
 
+	HelloChrome_Auto = HelloChrome_120
+	HelloChrome_58   = ClientHelloID{helloChrome, false, "58", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_62   = ClientHelloID{helloChrome, false, "62", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_70   = ClientHelloID{helloChrome, false, "70", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_72   = ClientHelloID{helloChrome, false, "72", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_83   = ClientHelloID{helloChrome, false, "83", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_87   = ClientHelloID{helloChrome, false, "87", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_96   = ClientHelloID{helloChrome, false, "96", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_100  = ClientHelloID{helloChrome, false, "100", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_102  = ClientHelloID{helloChrome, false, "102", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_103  = ClientHelloID{helloChrome, false, "103", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_104  = ClientHelloID{helloChrome, false, "104", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_105  = ClientHelloID{helloChrome, false, "105", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_106  = ClientHelloID{helloChrome, false, "106", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_107  = ClientHelloID{helloChrome, false, "107", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_108  = ClientHelloID{helloChrome, false, "108", nil, nil, EmptyClientHelloSpecFactory}
 	// Chrome ECH
-	HelloChrome_120 = ClientHelloID{helloChrome, true, "120", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_120 = ClientHelloID{helloChrome, false, "120", nil, nil, EmptyClientHelloSpecFactory}
 	// Chrome w/ Post-Quantum Key Agreement and Encrypted ClientHello
-	HelloChrome_120_PQ = ClientHelloID{helloChrome, true, "120_PQ", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_120_PQ = ClientHelloID{helloChrome, false, "120_PQ", nil, nil, EmptyClientHelloSpecFactory}
 
-	HelloOpera_Auto = HelloOpera_91
-	HelloOpera_91   = ClientHelloID{helloOpera, false, "91", nil, nil, EmptyClientHelloSpecFactory}
-	HelloOpera_90   = ClientHelloID{helloOpera, false, "90", nil, nil, EmptyClientHelloSpecFactory}
-	HelloOpera_89   = ClientHelloID{helloOpera, false, "89", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_109 = ClientHelloID{helloChrome, false, "109", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_110 = ClientHelloID{helloChrome, false, "110", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_111 = ClientHelloID{helloChrome, false, "111", nil, nil, EmptyClientHelloSpecFactory}
+	HelloChrome_112 = ClientHelloID{helloChrome, false, "112", nil, nil, EmptyClientHelloSpecFactory}
 
 	HelloIOS_Auto = HelloIOS_16_0
 	HelloIOS_11_1 = ClientHelloID{helloIOS, false, "111", nil, nil, EmptyClientHelloSpecFactory} // legacy "111" means 11.1
@@ -684,20 +681,19 @@ var (
 	HelloIPad_Auto = HelloIPad_15_6
 	HelloIPad_15_6 = ClientHelloID{helloIPad, false, "15.6", nil, nil, EmptyClientHelloSpecFactory}
 
+	HelloSafari_Auto   = HelloSafari_16_0
+	HelloSafari_15_6_1 = ClientHelloID{helloSafari, false, "15.6.1", nil, nil, EmptyClientHelloSpecFactory}
+	HelloSafari_16_0   = ClientHelloID{helloSafari, false, "16.0", nil, nil, EmptyClientHelloSpecFactory}
+
 	HelloAndroid_11_OkHttp = ClientHelloID{helloAndroid, false, "11", nil, nil, EmptyClientHelloSpecFactory}
 
 	HelloEdge_Auto = HelloEdge_85 // HelloEdge_106 seems to be incompatible with this library
 	HelloEdge_85   = ClientHelloID{helloEdge, false, "85", nil, nil, EmptyClientHelloSpecFactory}
 	HelloEdge_106  = ClientHelloID{helloEdge, false, "106", nil, nil, EmptyClientHelloSpecFactory}
 
-	HelloSafari_Auto   = HelloSafari_16_0
-	HelloSafari_15_6_1 = ClientHelloID{helloSafari, false, "15.6.1", nil, nil, EmptyClientHelloSpecFactory}
-	HelloSafari_16_0   = ClientHelloID{helloSafari, false, "16.0", nil, nil, EmptyClientHelloSpecFactory}
-
 	Hello360_Auto = Hello360_7_5 // Hello360_11_0 seems to be incompatible with this library
 	Hello360_7_5  = ClientHelloID{hello360, false, "7.5", nil, nil, EmptyClientHelloSpecFactory}
 	Hello360_11_0 = ClientHelloID{hello360, false, "11.0", nil, nil, EmptyClientHelloSpecFactory}
-	Hello360_14_5 = ClientHelloID{hello360, false, "14.5", nil, nil, EmptyClientHelloSpecFactory}
 
 	HelloQQ_Auto = HelloQQ_11_1
 	HelloQQ_11_1 = ClientHelloID{helloQQ, false, "11.1", nil, nil, EmptyClientHelloSpecFactory}
@@ -719,6 +715,7 @@ type Weights struct {
 	Extensions_Append_Reneg                            float64
 	Extensions_Append_EMS                              float64
 	FirstKeyShare_Set_CurveP256                        float64
+	Extensions_Append_ALPS_Old                         float64
 	Extensions_Append_ALPS                             float64
 }
 
@@ -740,6 +737,7 @@ var DefaultWeights = Weights{
 	Extensions_Append_Reneg:                            0.75,
 	Extensions_Append_EMS:                              0.77,
 	FirstKeyShare_Set_CurveP256:                        0.25,
+	Extensions_Append_ALPS_Old:                         0.33,
 	Extensions_Append_ALPS:                             0.33,
 }
 
@@ -761,6 +759,13 @@ func unGREASEUint16(v uint16) uint16 {
 	}
 }
 
+// utlsMacSHA384 returns a SHA-384 based MAC. These are only supported in TLS 1.2
+// so the given version is ignored.
+func utlsMacSHA384(key []byte) hash.Hash {
+	return hmac.New(sha512.New384, key)
+}
+
+var utlsSupportedCipherSuites []*cipherSuite
 var utlsSupportedGroups = []CurveID{
 	X25519,
 	CurveP256,
@@ -779,14 +784,6 @@ func isGroupSupported(id CurveID) bool {
 
 	return false
 }
-
-// utlsMacSHA384 returns a SHA-384 based MAC. These are only supported in TLS 1.2
-// so the given version is ignored.
-func utlsMacSHA384(key []byte) hash.Hash {
-	return hmac.New(sha512.New384, key)
-}
-
-var utlsSupportedCipherSuites []*cipherSuite
 
 func init() {
 	utlsSupportedCipherSuites = append(cipherSuites, []*cipherSuite{
