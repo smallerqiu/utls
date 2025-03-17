@@ -712,8 +712,8 @@ func (e *ApplicationSettingsExtension) Read(b []byte) (int, error) {
 	}
 
 	// Read Type.
-	b[0] = byte(utlsExtensionApplicationSettings >> 8)   // hex: 44 dec: 68
-	b[1] = byte(utlsExtensionApplicationSettings & 0xff) // hex: 69 dec: 105
+	b[0] = byte(e.CodePoint >> 8)   // hex: 44 dec: 68
+	b[1] = byte(e.CodePoint & 0xff) // hex: 69 dec: 105
 
 	lengths := b[2:] // get the remaining buffer without Type
 	b = b[6:]        // set the buffer to the buffer without Type, Length and ALPS Extension Length (so only the Supported ALPN list remains)
