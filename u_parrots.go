@@ -3101,7 +3101,7 @@ func (uconn *UConn) applyPresetByID(id ClientHelloID) (err error) {
 		}
 
 		return uconn.ApplyPreset(&spec)
-	case helloCustomInternal:
+	case helloCustom:
 		return nil
 	default:
 		spec, err = id.ToSpec()
