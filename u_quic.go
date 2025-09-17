@@ -20,20 +20,12 @@ type UQUICConn struct {
 	sessionTicketSent bool
 }
 
-// UQUICClient returns a new TLS client side connection using QUICTransport as the
+// QUICClient returns a new TLS client side connection using QUICTransport as the
 // underlying transport. The config cannot be nil.
 //
 // The config's MinVersion must be at least TLS 1.3.
 func UQUICClient(config *QUICConfig, clientHelloID ClientHelloID) *UQUICConn {
-	return newUQUICConn(UClient(nil, config.TLSConfig, clientHelloID, false, false))
-}
-
-func UQUICServer(config *QUICConfig) *UQUICConn {
-	return &UQUICConn{
-		conn: &UConn{
-			Conn: Server(nil, config.TLSConfig),
-		},
-	}
+	return newUQUICConn(UClient(nil, config.TLSConfig, clientHelloID, false, false, false))
 }
 
 func newUQUICConn(uconn *UConn) *UQUICConn {
@@ -156,7 +148,7 @@ func (q *UQUICConn) SendSessionTicket(opts QUICSessionTicketOptions) error {
 		return quicError(errors.New("tls: SendSessionTicket called multiple times"))
 	}
 	q.sessionTicketSent = true
-	return quicError(c.sendSessionTicket(opts.EarlyData))
+	return quicError(c.sendSessionTicket(opts.EarlyData, opts.Extra))
 }
 
 // ConnectionState returns basic TLS details about the connection.

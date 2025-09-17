@@ -62,7 +62,7 @@ func runResumptionCheck(helloID tls.ClientHelloID, getCustomSpec func() *tls.Cli
 		// NextProtos:         []string{"h2", "http/1.1"},
 		ClientSessionCache: csc, // set this so session tickets will be saved
 		OmitEmptyPsk:       true,
-	}, helloID, false, false)
+	}, helloID, false, false, false)
 
 	if getCustomSpec != nil {
 		tlsConn.ApplyPreset(getCustomSpec())
@@ -121,7 +121,7 @@ func runResumptionCheck(helloID tls.ClientHelloID, getCustomSpec func() *tls.Cli
 			ServerName:         strings.Split(serverAddr, ":")[0],
 			ClientSessionCache: csc,
 			OmitEmptyPsk:       true,
-		}, helloID, false, false)
+		}, helloID, false, false, false)
 
 		if getCustomSpec != nil {
 			tlsConnPSK.ApplyPreset(getCustomSpec())

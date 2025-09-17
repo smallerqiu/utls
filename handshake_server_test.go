@@ -52,7 +52,7 @@ func testClientHelloFailure(t *testing.T, serverConfig *Config, m handshakeMessa
 	}()
 	ctx := context.Background()
 	conn := Server(s, serverConfig)
-	ch, err := conn.readClientHello(ctx)
+	ch, _, err := conn.readClientHello(ctx)
 	if err == nil && conn.vers == VersionTLS13 {
 		hs := serverHandshakeStateTLS13{
 			c:           conn,
@@ -1460,7 +1460,7 @@ func TestSNIGivenOnFailure(t *testing.T) {
 	}()
 	conn := Server(s, serverConfig)
 	ctx := context.Background()
-	ch, err := conn.readClientHello(ctx)
+	ch, _, err := conn.readClientHello(ctx)
 	hs := serverHandshakeState{
 		c:           conn,
 		ctx:         ctx,

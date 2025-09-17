@@ -49,7 +49,7 @@ func HttpGetCustom(hostname string, addr string) (*http.Response, error) {
 	if err != nil {
 		return nil, fmt.Errorf("net.DialTimeout error: %+v", err)
 	}
-	uTlsConn := tls.UClient(dialConn, &config, tls.HelloCustom, false, false)
+	uTlsConn := tls.UClient(dialConn, &config, tls.HelloCustom, false, false, false)
 	defer uTlsConn.Close()
 
 	// do not use this particular spec in production

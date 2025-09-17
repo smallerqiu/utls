@@ -186,12 +186,12 @@ func prependRecordHeader(hello []byte, minTLSVersion uint16) []byte {
 }
 
 func checkUTLSFingerPrintClientHello(t *testing.T, clientHelloID ClientHelloID, serverName string) {
-	uconn := UClient(&net.TCPConn{}, &Config{ServerName: serverName}, clientHelloID, false, false)
+	uconn := UClient(&net.TCPConn{}, &Config{ServerName: serverName}, clientHelloID, false, false, false)
 	if err := uconn.BuildHandshakeState(); err != nil {
 		t.Errorf("got error: %v; expected to succeed", err)
 	}
 
-	generatedUConn := UClient(&net.TCPConn{}, &Config{ServerName: "foobar"}, HelloCustom, false, false)
+	generatedUConn := UClient(&net.TCPConn{}, &Config{ServerName: "foobar"}, HelloCustom, false, false, false)
 	fingerprinter := &Fingerprinter{}
 	minTLSVers := createMinTLSVersion(uconn.vers)
 	generatedSpec, err := fingerprinter.FingerprintClientHello(prependRecordHeader(uconn.HandshakeState.Hello.Raw, minTLSVers))
@@ -258,7 +258,7 @@ func TestUTLSFingerprintClientHelloBluntMimicry(t *testing.T) {
 	}
 	specWithGeneric.Extensions = append(specWithGeneric.Extensions, &GenericExtension{extensionId, extensionData})
 
-	uconn := UClient(&net.TCPConn{}, &Config{ServerName: serverName}, HelloCustom, false, false)
+	uconn := UClient(&net.TCPConn{}, &Config{ServerName: serverName}, HelloCustom, false, false, false)
 
 	if err := uconn.ApplyPreset(&specWithGeneric); err != nil {
 		t.Errorf("got error: %v; expected to succeed", err)
@@ -302,8 +302,8 @@ func TestUTLSFingerprintClientHelloAlwaysAddPadding(t *testing.T) {
 		t.Errorf("got error: %v; expected to succeed", err)
 	}
 
-	uconnWithoutPadding := UClient(&net.TCPConn{}, &Config{ServerName: serverName}, HelloCustom, false, false)
-	uconnWithPadding := UClient(&net.TCPConn{}, &Config{ServerName: serverName}, HelloCustom, false, false)
+	uconnWithoutPadding := UClient(&net.TCPConn{}, &Config{ServerName: serverName}, HelloCustom, false, false, false)
+	uconnWithPadding := UClient(&net.TCPConn{}, &Config{ServerName: serverName}, HelloCustom, false, false, false)
 
 	if err := uconnWithoutPadding.ApplyPreset(&specWithoutPadding); err != nil {
 		t.Errorf("got error: %v; expected to succeed", err)
@@ -520,7 +520,7 @@ func TestUTLSHandshakeClientFingerprintedSpecFromChrome_58(t *testing.T) {
 	serverName := "foobar"
 	originalConfig := getUTLSTestConfig()
 	originalConfig.ServerName = serverName
-	uconn := UClient(&net.TCPConn{}, originalConfig, helloID, false, false)
+	uconn := UClient(&net.TCPConn{}, originalConfig, helloID, false, false, false)
 	if err := uconn.BuildHandshakeState(); err != nil {
 		t.Errorf("got error: %v; expected to succeed", err)
 	}
@@ -556,7 +556,7 @@ func TestUTLSHandshakeClientFingerprintedSpecFromChrome_70(t *testing.T) {
 	originalConfig := getUTLSTestConfig()
 	originalConfig.ServerName = serverName
 
-	uconn := UClient(&net.TCPConn{}, originalConfig, helloID, false, false)
+	uconn := UClient(&net.TCPConn{}, originalConfig, helloID, false, false, false)
 	if err := uconn.BuildHandshakeState(); err != nil {
 		t.Errorf("got error: %v; expected to succeed", err)
 	}

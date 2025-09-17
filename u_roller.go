@@ -41,7 +41,6 @@ func NewRoller() (*Roller, error) {
 			HelloQQ_Auto,
 			Hello360_Auto,
 			HelloEdge_Auto,
-			HelloRandomized,
 		},
 		TcpDialTimeout:      time.Second * time.Duration(tcpDialTimeoutInc),
 		TlsHandshakeTimeout: time.Second * time.Duration(tlsHandshakeTimeoutInc),
@@ -90,7 +89,7 @@ func (c *Roller) Dial(network, addr, serverName string) (*UConn, error) {
 			return nil, err // on tcp Dial failure return with error right away
 		}
 
-		client := UClient(tcpConn, nil, helloID, helloID.RandomExtensionOrder, false)
+		client := UClient(tcpConn, nil, helloID, helloID.RandomExtensionOrder, false, false)
 		client.SetSNI(serverName)
 		client.SetDeadline(time.Now().Add(c.TlsHandshakeTimeout))
 		err = client.Handshake()

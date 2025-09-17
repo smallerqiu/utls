@@ -31,20 +31,6 @@ import (
 // Either *ecdh.PrivateKey or *kemPrivateKey
 type clientKeySharePrivate interface{}
 
-type kemPrivateKey struct {
-	secretKey kem.PrivateKey
-	curveID   CurveID
-}
-
-var (
-	X25519Kyber512Draft00    = CurveID(0xfe30) // 65072
-	X25519Kyber768Draft00    = CurveID(0x6399) // 25497
-	X25519Kyber768Draft00Old = CurveID(0xfe31) // 65073
-	P256Kyber768Draft00      = CurveID(0xfe32) // 65074
-	X25519MLKEM768           = CurveID(0x11ec) // 4588
-	invalidCurveID           = CurveID(0)
-)
-
 // Extract CurveID from clientKeySharePrivate
 func clientKeySharePrivateCurveID(ks clientKeySharePrivate) CurveID {
 	switch v := ks.(type) {
