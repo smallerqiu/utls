@@ -1,9 +1,9 @@
 module github.com/smallerqiu/utls
 
 
-go 1.24.0
+go 1.24.1
 
-toolchain go1.24.1
+toolchain go1.24.7
 
 retract (
 	v1.4.1 // #218
