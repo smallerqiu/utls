@@ -42,7 +42,7 @@ func (hs *helloSpec) helloName() string {
 
 func TestUTLSMarshalNoOp(t *testing.T) {
 	str := "We rely on clientHelloMsg.marshal() not doing anything if clientHelloMsg.raw is set"
-	uconn := UClient(&net.TCPConn{}, &Config{ServerName: "foobar"}, HelloGolang, false, false, false)
+	uconn := UClient(&net.TCPConn{}, &Config{ServerName: "foobar"}, HelloGolang, false, false, nil)
 	msg, _, _, err := uconn.makeClientHello()
 	if err != nil {
 		t.Errorf("Got error: %s; expected to succeed", err)
@@ -488,9 +488,9 @@ func (test *clientTest) runUTLS(t *testing.T, write bool, hello helloStrategy, o
 	var client *UConn
 	switch h := hello.(type) {
 	case *helloID:
-		client = UClient(clientConn, config, h.id, false, false, false)
+		client = UClient(clientConn, config, h.id, false, false, nil)
 	case *helloSpec:
-		client = UClient(clientConn, config, HelloCustom, false, false, false)
+		client = UClient(clientConn, config, HelloCustom, false, false, nil)
 		if err := client.ApplyPreset(h.spec); err != nil {
 			t.Errorf("got error: %v; expected to succeed", err)
 			return
