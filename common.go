@@ -139,6 +139,7 @@ const (
 	ExtensionALPSOld                 uint16 = 17513 // same name as google is using https://boringssl.googlesource.com/boringssl/+/HEAD/include/openssl/tls1.h#115
 	ExtensionALPS                    uint16 = 17613
 	ExtensionChannelId               uint16 = 30032
+	ExtensionTrustAnchors            uint16 = 51764 // 0xca34, BoringSSL's codepoint; the empty identifier list a browser with no HTTPS DNS hint sends, on every connection from Chrome 153
 	ExtensionECH                     uint16 = 65037
 	ExtensionRenegotiationInfo       uint16 = 65281
 	extensionRenegotiationInfo       uint16 = 0xff01
@@ -445,6 +446,14 @@ const (
 	// EdDSA algorithms.
 	Ed25519     SignatureScheme = 0x0807 //2055
 	FAKEEd25519 SignatureScheme = 0x0808 //2056
+
+	// ML-DSA (FIPS 204) algorithms, added to the TLS SignatureScheme registry in
+	// 2025. Chrome advertises all three from 150, ahead of the ECDSA/RSA list, so
+	// a fingerprint that leaves them out differs in extension content even when the
+	// extension set is identical.
+	MLDSA44 SignatureScheme = 0x0904 //2308
+	MLDSA65 SignatureScheme = 0x0905 //2309
+	MLDSA87 SignatureScheme = 0x0906 //2310
 
 	// Legacy signature and hash algorithms for TLS 1.2.
 	PKCS1WithSHA1 SignatureScheme = 0x0201 //513
