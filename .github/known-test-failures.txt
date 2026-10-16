@@ -1,0 +1,114 @@
+# Tests that do not pass in a maintained environment, recorded so CI can tell a
+# new fingerprint regression apart from this inherited debt. The Test job in
+# .github/workflows/go.yml fails on any failing test that is not listed below,
+# and warns when one listed here passes again - prune it then.
+#
+# None of these is a bug this module introduced. Three independent reasons:
+#
+# 1. Byte-for-byte comparisons against recorded flows. Either the harness forks
+#    `openssl s_client`/`s_server` and compares what comes back with testdata
+#    recorded with OpenSSL 1.1.1 - checkOpenSSLVersion in handshake_test.go
+#    refuses to re-record with anything else - or it replays one of uTLS' own
+#    parrot/raw-capture recordings (TestUTLSHandshakeClientParrot*,
+#    TestUTLSHandshakeClientFingerprintedSpec*, TestUTLSServerNameIP,
+#    TestUTLSEmptyServerName, TestUTLSRemoveSNIExtension,
+#    TestUTLSHelloRetryRequest), whose key share the test cannot reproduce
+#    either. Current OpenSSL is 3.x, so the reference peer sends different bytes
+#    (the TestHandshakeClient*, TestHandshakeServer*, TestHandshakClientSCTs,
+#    TestClientKeyUpdate, TestVerifyConnection, TestResumption*/TestServerResumption*
+#    families). Go 1.15 removed renegotiation, which is why TestRenegotiate* and
+#    TestRenegotiationRejected are here too.
+#
+# 2. Expired test certificates. testRSACertificate in handshake_test.go is
+#    notAfter 2025-01-01 and testECDSACertificate is notAfter 2022-11-20, so every
+#    handshake that verifies a chain ends in `remote error: tls: bad certificate`.
+#
+# 3. Upstream tests that assert on the shape of a struct after a round trip. uTLS
+#    keeps the raw bytes and the extension list (original, extensions) so a
+#    fingerprint can be re-emitted, and it has fields crypto/tls does not
+#    (EncryptedClientHelloKeys, EncryptedClientHelloConfigList), so
+#    TestMarshalUnmarshal and TestCloneNonFuncFields compare a config they were
+#    never written for.
+#
+# TestAESCipherReorderingTLS13 is deliberately absent: it nil-panics and would
+# abort the binary mid-run, so the Test job skips it (SKIP_TEST in the workflow)
+# rather than record it. That abort is also why this list is longer than the set
+# of `--- FAIL:` lines a plain `go test ./...` prints - the tests declared after
+# the crasher only become visible once the run is allowed to finish.
+#
+# Recorded 2026-10-16 from `go test -count=1 -v -skip '^TestAESCipherReorderingTLS13$'
+# ./...` on macOS arm64 with Go 1.26 and OpenSSL 3.6.4. The reference peer's bytes
+# are environment-specific, so a GitHub ubuntu-latest run can differ by a name or
+# two; when the gate says "new test failures" and the reason is a `mismatch on read`
+# of a recorded flow, the fix is to add that name here, not to touch the handshake.
+#
+# Sorted, one name per line; blank lines and lines starting with # are ignored.
+TestClientAuth
+TestClientKeyUpdate
+TestCloneNonFuncFields
+TestCrossVersionResume
+TestHandshakClientSCTs
+TestHandshakeClientAES128CBCSHA256
+TestHandshakeClientAES128SHA256
+TestHandshakeClientAES256GCMSHA384
+TestHandshakeClientAES256SHA384
+TestHandshakeClientALPNMatch
+TestHandshakeClientCHACHA20SHA256
+TestHandshakeClientCertECDSA
+TestHandshakeClientCertRSA
+TestHandshakeClientCertRSAPKCS1v15
+TestHandshakeClientCertRSAPSS
+TestHandshakeClientECDHEECDSAAES
+TestHandshakeClientECDHEECDSAAES128CBCSHA256
+TestHandshakeClientECDHEECDSAAESGCM
+TestHandshakeClientECDHEECDSAChaCha20
+TestHandshakeClientECDHERSAAES
+TestHandshakeClientECDHERSAAES128CBCSHA256
+TestHandshakeClientECDHERSAChaCha20
+TestHandshakeClientECDSATLS13
+TestHandshakeClientEd25519
+TestHandshakeClientExportKeyingMaterial
+TestHandshakeClientHelloRetryRequest
+TestHandshakeClientP256
+TestHandshakeClientRSAAES128GCM
+TestHandshakeClientRSAAES256GCM
+TestHandshakeClientRSARC4
+TestHandshakeClientX25519
+TestHandshakeServerAES128SHA256
+TestHandshakeServerAES256GCMSHA384
+TestHandshakeServerAES256SHA384
+TestHandshakeServerAESGCM
+TestHandshakeServerALPN
+TestHandshakeServerALPNFallback
+TestHandshakeServerALPNNotConfigured
+TestHandshakeServerCHACHA20SHA256
+TestHandshakeServerECDHEECDSAAES
+TestHandshakeServerEd25519
+TestHandshakeServerExportKeyingMaterial
+TestHandshakeServerHelloRetryRequest
+TestHandshakeServerP256
+TestHandshakeServerRSAPKCS1v15
+TestHandshakeServerRSAPSS
+TestHandshakeServerX25519
+TestMarshalUnmarshal
+TestRenegotiateOnce
+TestRenegotiateTwice
+TestRenegotiateTwiceRejected
+TestRenegotiationRejected
+TestResumption
+TestResumptionKeepsOCSPAndSCT
+TestServerResumption
+TestServerResumptionDisabled
+TestUTLSEmptyServerName
+TestUTLSHandshakeClientFingerprintedSpecFromChrome_58
+TestUTLSHandshakeClientFingerprintedSpecFromChrome_70
+TestUTLSHandshakeClientFingerprintedSpecFromRaw
+TestUTLSHandshakeClientParrotChrome_58
+TestUTLSHandshakeClientParrotChrome_58_setclienthello
+TestUTLSHandshakeClientParrotChrome_70
+TestUTLSHandshakeClientParrotFirefox_55
+TestUTLSHandshakeClientParrotFirefox_63
+TestUTLSHelloRetryRequest
+TestUTLSRemoveSNIExtension
+TestUTLSServerNameIP
+TestVerifyConnection
