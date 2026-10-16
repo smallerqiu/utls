@@ -77,6 +77,19 @@ func TestMarshalUnmarshal(t *testing.T) {
 				m.activeCertHandles = nil
 			}
 
+			// [uTLS] original holds the raw wire bytes and extensions the list of
+			// extension IDs, both kept so a captured ClientHello/ServerHello can be
+			// re-emitted byte for byte. unmarshal fills them from the message it just
+			// parsed, while the value quick.Value generated has structured fields and
+			// no capture - so neither is part of the value this round trip is meant to
+			// preserve. Drop them the way activeCertHandles above is dropped.
+			if m, ok := m.(*clientHelloMsg); ok {
+				m.original, m.extensions = nil, nil
+			}
+			if m, ok := m.(*serverHelloMsg); ok {
+				m.original = nil
+			}
+
 			if !reflect.DeepEqual(m1, m) {
 				t.Errorf("#%d got:%#v want:%#v %x", i, m, m1, marshaled)
 				break

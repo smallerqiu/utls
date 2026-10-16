@@ -3,7 +3,7 @@
 # .github/workflows/go.yml fails on any failing test that is not listed below,
 # and warns when one listed here passes again - prune it then.
 #
-# None of these is a bug this module introduced. Three independent reasons:
+# None of these is a bug this module introduced. Two shared causes:
 #
 # 1. Byte-for-byte comparisons against recorded flows. Either the harness forks
 #    `openssl s_client`/`s_server` and compares what comes back with testdata
@@ -23,13 +23,6 @@
 #    notAfter 2025-01-01 and testECDSACertificate is notAfter 2022-11-20, so every
 #    handshake that verifies a chain ends in `remote error: tls: bad certificate`.
 #
-# 3. Upstream tests that assert on the shape of a struct after a round trip. uTLS
-#    keeps the raw bytes and the extension list (original, extensions) so a
-#    fingerprint can be re-emitted, and it has fields crypto/tls does not
-#    (EncryptedClientHelloKeys, EncryptedClientHelloConfigList), so
-#    TestMarshalUnmarshal and TestCloneNonFuncFields compare a config they were
-#    never written for.
-#
 # TestAESCipherReorderingTLS13 is deliberately absent: it nil-panics and would
 # abort the binary mid-run, so the Test job skips it (SKIP_TEST in the workflow)
 # rather than record it. That abort is also why this list is longer than the set
@@ -45,7 +38,6 @@
 # Sorted, one name per line; blank lines and lines starting with # are ignored.
 TestClientAuth
 TestClientKeyUpdate
-TestCloneNonFuncFields
 TestCrossVersionResume
 TestHandshakClientSCTs
 TestHandshakeClientAES128CBCSHA256
@@ -90,7 +82,6 @@ TestHandshakeServerP256
 TestHandshakeServerRSAPKCS1v15
 TestHandshakeServerRSAPSS
 TestHandshakeServerX25519
-TestMarshalUnmarshal
 TestRenegotiateOnce
 TestRenegotiateTwice
 TestRenegotiateTwiceRejected
